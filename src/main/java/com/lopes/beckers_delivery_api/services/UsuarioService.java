@@ -9,6 +9,8 @@ import com.lopes.beckers_delivery_api.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
@@ -38,8 +40,11 @@ public class UsuarioService {
         return usuarioRepository.save(usuarioModel);
     }
 
-    public List<UsuarioResponseDto> getAllUsuariosService(){
-        List<UsuarioModel> usuarios = usuarioRepository.findAll();
+    public List<UsuarioResponseDto> getAllUsuariosService(int page, int itens){
+        List<UsuarioModel> usuarios = usuarioRepository
+                .findAll(PageRequest.of(page, itens, Sort.by("nome").ascending()))
+                .getContent();
+
         return usuarios.stream()
                 .map(usuario -> {
                     EnderecoResponseDto enderecoResponseDto = new EnderecoResponseDto(
@@ -84,9 +89,7 @@ public class UsuarioService {
                 usuarioModel.getCpf(),
                 enderecoResponseDto);
 
-        UsuarioResponseDto usuarioResponseDto = new UsuarioResponseDto(dadosUsuarioResponseDto);
-
-        return usuarioResponseDto;
+        return new UsuarioResponseDto(dadosUsuarioResponseDto);
         } else {
             throw new IllegalArgumentException("Usuário não encontrado!");
         }
