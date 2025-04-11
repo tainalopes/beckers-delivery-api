@@ -41,8 +41,9 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UsuarioResponseDto>> getAllUsuarios(){
-        List<UsuarioResponseDto> usuarioResponseDtos = usuarioService.getAllUsuariosService();
+    public ResponseEntity<List<UsuarioResponseDto>> getAllUsuarios(@RequestParam("pagina") int page,
+                                                                   @RequestParam("itens") int itens){
+        List<UsuarioResponseDto> usuarioResponseDtos = usuarioService.getAllUsuariosService(page, itens);
 
         return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDtos);
     }
