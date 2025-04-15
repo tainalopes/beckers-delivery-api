@@ -21,6 +21,8 @@ public class UsuarioModel implements Serializable {
     private String numero;
     private String complemento;
     private String bairro;
+    private String cidade;
+    private String estado;
 
     public UUID getIdUsuario() {
         return idUsuario;
@@ -117,8 +119,4 @@ public class UsuarioModel implements Serializable {
     public void setEstado(String estado) {
         this.estado = estado;
     }
-
-    private String cidade;
-    private String estado;
-
 }
