@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -26,13 +25,12 @@ public class UsuarioService {
 
     @Transactional // caso algo dê errado, ele faz o rollback
     public UsuarioModel saveUsuarioService(DadosUsuarioRecordDto dadosUsuarioRecordDto) {
-        if (usuarioRepository.findByEmail(dadosUsuarioRecordDto.email()).isPresent()) {
-            throw new IllegalArgumentException("Já existe um usuário com o email " + dadosUsuarioRecordDto.email() + ".");
-        }
 
-        if (usuarioRepository.findByCpf(dadosUsuarioRecordDto.cpf()).isPresent()) {
-            throw new IllegalArgumentException("Já existe um usuário com o CPF " + dadosUsuarioRecordDto.cpf() + ".");
-        }
+        usuarioRepository.findByEmail(dadosUsuarioRecordDto.email()).orElseThrow(() ->
+                new IllegalArgumentException("Já existe um usuário com o email " + dadosUsuarioRecordDto.email() + "."));
+
+        usuarioRepository.findByCpf(dadosUsuarioRecordDto.cpf()).orElseThrow(() ->
+                new IllegalArgumentException("Já existe um usuário com o CPF " + dadosUsuarioRecordDto.cpf() + "."));
 
         var usuarioModel = new UsuarioModel();
         BeanUtils.copyProperties(dadosUsuarioRecordDto, usuarioModel);
@@ -68,10 +66,9 @@ public class UsuarioService {
     }
 
     public Object getUsuarioByIdService(@PathVariable(value = "id") UUID id){
-    Optional<UsuarioModel> usuario = usuarioRepository.findById(id);
-
-    if(usuario.isPresent()){
-        UsuarioModel usuarioModel = usuario.get();
+    UsuarioModel usuarioModel = usuarioRepository
+            .findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
 
         EnderecoResponseDto enderecoResponseDto = new EnderecoResponseDto(
                 usuarioModel.getLogradouro(),
@@ -90,8 +87,5 @@ public class UsuarioService {
                 enderecoResponseDto);
 
         return new UsuarioResponseDto(dadosUsuarioResponseDto);
-        } else {
-            throw new IllegalArgumentException("Usuário não encontrado!");
-        }
     }
 }
