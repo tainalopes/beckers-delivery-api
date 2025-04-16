@@ -1,7 +1,10 @@
 package com.lopes.beckers_delivery_api.models;
 
 import jakarta.persistence.*;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -11,25 +14,21 @@ public class UsuarioModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID idUsuario;
+    private UUID id;
     private String nome;
     private String email;
     private String senha;
     private String cpf;
-    private String cep;
-    private String logradouro;
-    private String numero;
-    private String complemento;
-    private String bairro;
-    private String cidade;
-    private String estado;
 
-    public UUID getIdUsuario() {
-        return idUsuario;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EnderecoModel> enderecos = new ArrayList<>();
+
+    public UUID getId() {
+        return id;
     }
 
-    public void setIdUsuario(UUID idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setId(UUID idUsuario) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -64,59 +63,11 @@ public class UsuarioModel implements Serializable {
         this.cpf = cpf;
     }
 
-    public String getCep() {
-        return cep;
+    public List<EnderecoModel> getEnderecos() {
+        return enderecos;
     }
 
-    public void setCep(String cep) {
-        this.cep = cep;
-    }
-
-    public String getLogradouro() {
-        return logradouro;
-    }
-
-    public void setLogradouro(String logradouro) {
-        this.logradouro = logradouro;
-    }
-
-    public String getNumero() {
-        return numero;
-    }
-
-    public void setNumero(String numero) {
-        this.numero = numero;
-    }
-
-    public String getComplemento() {
-        return complemento;
-    }
-
-    public void setComplemento(String complemento) {
-        this.complemento = complemento;
-    }
-
-    public String getBairro() {
-        return bairro;
-    }
-
-    public void setBairro(String bairro) {
-        this.bairro = bairro;
-    }
-
-    public String getCidade() {
-        return cidade;
-    }
-
-    public void setCidade(String cidade) {
-        this.cidade = cidade;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setEnderecos(List<EnderecoModel> enderecos) {
+        this.enderecos = enderecos;
     }
 }
