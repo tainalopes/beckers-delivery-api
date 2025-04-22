@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +19,6 @@ import java.util.UUID;
 public class UsuarioController {
 
     @Autowired
-    //UsuarioRepository usuarioRepository;
     UsuarioService usuarioService;
 
     @PostMapping
@@ -29,7 +29,7 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(dadosUsuarioRecordDto);
 
-            } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
 
@@ -42,20 +42,20 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDto>> getAllUsuarios(@RequestParam("pagina") int page,
-                                                                   @RequestParam("itens") int itens){
+                                                                   @RequestParam("itens") int itens) {
         List<UsuarioResponseDto> usuarioResponseDtos = usuarioService.getAllUsuariosService(page, itens);
 
         return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDtos);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Object> getUsuarioById(@PathVariable(value = "id") UUID id){
-        try{
-        Object usuarioResponseDto = usuarioService.getUsuarioByIdService(id);
+    public ResponseEntity<Object> getUsuarioById(@PathVariable(value = "id") UUID id) {
+        try {
+            Object usuarioResponseDto = usuarioService.getUsuarioByIdService(id);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(usuarioResponseDto);
 
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
 
