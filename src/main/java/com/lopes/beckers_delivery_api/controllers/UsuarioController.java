@@ -2,7 +2,6 @@ package com.lopes.beckers_delivery_api.controllers;
 
 import com.lopes.beckers_delivery_api.dtos.DadosUsuarioRecordDto;
 import com.lopes.beckers_delivery_api.dtos.UsuarioResponseDto;
-import com.lopes.beckers_delivery_api.exceptions.ErrorResponse;
 import com.lopes.beckers_delivery_api.models.UsuarioModel;
 import com.lopes.beckers_delivery_api.services.UsuarioService;
 import jakarta.validation.Valid;
@@ -24,20 +23,9 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<?> saveUsuario(@RequestBody @Valid DadosUsuarioRecordDto dadosUsuarioRecordDto) {
 
-        try {
-            UsuarioModel usuarioModel = usuarioService.saveUsuarioService(dadosUsuarioRecordDto);
+        UsuarioModel usuarioModel = usuarioService.saveUsuarioService(dadosUsuarioRecordDto);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(dadosUsuarioRecordDto);
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-
-        } catch (Exception e) {
-            // captura qualquer exceção inesperada e retorna um erro 500
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro interno: " + e.getMessage());
-        }
     }
 
     @GetMapping
@@ -50,19 +38,8 @@ public class UsuarioController {
 
     @GetMapping("{id}")
     public ResponseEntity<Object> getUsuarioById(@PathVariable(value = "id") UUID id) {
-        try {
             Object usuarioResponseDto = usuarioService.getUsuarioByIdService(id);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(usuarioResponseDto);
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-
-        } catch (Exception e) {
-            // captura qualquer exceção inesperada e retorna um erro 500
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro interno: " + e.getMessage());
-        }
     }
 }

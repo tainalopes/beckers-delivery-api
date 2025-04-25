@@ -1,5 +1,10 @@
 package com.lopes.beckers_delivery_api.exceptions;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ErrorResponse {
     private int statusCode;
     private String message;
@@ -7,13 +12,5 @@ public class ErrorResponse {
     public ErrorResponse(int statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;
-    }
-
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    public String getMessage() {
-        return message;
     }
 }
