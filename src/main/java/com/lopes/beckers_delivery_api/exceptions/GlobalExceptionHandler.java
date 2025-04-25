@@ -7,6 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -25,8 +27,27 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleJsonError(HttpMessageNotReadableException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Erro na leitura do JSON: " + ex.getMostSpecificCause().getMessage()));
+        // mensagem padrãao, para caso não cair em nenhuma condição abaixo
+        String message = "Erro na leitura do JSON.";
+
+        String mensagemErro = ex.getMostSpecificCause().getMessage();
+
+        // Regex para extrair o nome do campo
+        Pattern pattern = Pattern.compile("\\[\\\"(\\w+)\\\"\\]");
+        Matcher matcher = pattern.matcher(mensagemErro);
+
+        String ultimoCampoDaMensagemErro = null;
+        while (matcher.find()) {
+            ultimoCampoDaMensagemErro = matcher.group(1); // guarda sempre o último campo encontrado
+        }
+
+        if (ultimoCampoDaMensagemErro != null) {
+            message = "Valor inválido para o campo " + ultimoCampoDaMensagemErro + ".";
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

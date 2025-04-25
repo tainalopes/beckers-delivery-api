@@ -1,5 +1,7 @@
 package com.lopes.beckers_delivery_api.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lopes.beckers_delivery_api.enums.EstadosEnum;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
@@ -11,6 +13,7 @@ public record EnderecoRecordDto(
         String complemento,
         @NotNull(message = "O campo bairro não pode ser nulo.") String bairro,
         @NotNull(message = "O campo cidade não pode ser nulo.") String cidade,
-        @NotNull(message = "O campo estado não pode ser nulo.") String estado
+        @NotNull(message = "O campo estado não pode ser nulo.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING) EstadosEnum estado
         ) {
 }
