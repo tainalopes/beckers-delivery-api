@@ -1,5 +1,6 @@
 package com.lopes.beckers_delivery_api.models;
 
+import com.lopes.beckers_delivery_api.enums.EstadosEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +24,11 @@ public class EnderecoModel implements Serializable {
     private String complemento;
     private String bairro;
     private String cidade;
-    private String estado;
+
+    // sempre que que tiver um campo que é um enum, é necessário essas 2 anotações.
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadosEnum Estado;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
