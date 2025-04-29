@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,7 +89,7 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
-    public Object getUsuarioByIdService(@PathVariable(value = "id") UUID id) {
+    public Object getUsuarioByIdService(@PathVariable(value = "id") Long id) {
         UsuarioModel usuarioModel = usuarioRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
