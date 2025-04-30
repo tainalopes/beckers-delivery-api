@@ -28,6 +28,7 @@ public class UsuarioController {
         UsuarioModel usuarioModel = usuarioService.saveUsuarioService(dadosUsuarioRecordDto);
         List<EnderecoResponseDto> enderecosDto = usuarioModel.getEnderecos().stream()
                 .map(endereco -> new EnderecoResponseDto(
+                        endereco.getId(),
                         endereco.getLogradouro(),
                         endereco.getNumero(),
                         endereco.getComplemento(),

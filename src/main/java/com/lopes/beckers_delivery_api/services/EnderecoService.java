@@ -1,6 +1,7 @@
 package com.lopes.beckers_delivery_api.services;
 
 import com.lopes.beckers_delivery_api.dtos.EnderecoRecordDto;
+import com.lopes.beckers_delivery_api.exceptions.NotFoundException;
 import com.lopes.beckers_delivery_api.models.EnderecoModel;
 import com.lopes.beckers_delivery_api.models.UsuarioModel;
 import com.lopes.beckers_delivery_api.repositories.EnderecoRepository;
@@ -45,5 +46,23 @@ public class EnderecoService {
         }).collect(Collectors.toList());
 
         return enderecoRepository.saveAll(enderecos);
+    }
+
+    @Transactional
+    public void deleteEnderecoService(Long idUsuario, Long idEndereco){
+        UsuarioModel usuarioModel = usuarioService.findById(idUsuario);
+        EnderecoModel enderecoModel = findById(idEndereco);
+
+        if(!enderecoModel.getUsuario().getId().equals(usuarioModel.getId())){
+            throw new IllegalArgumentException("Endereço não pertence ao usuário.");
+        }
+
+        enderecoRepository.delete(enderecoModel);
+    }
+
+    public EnderecoModel findById(Long id){
+        return enderecoRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException("Endereço não encontrado!"));
     }
 }

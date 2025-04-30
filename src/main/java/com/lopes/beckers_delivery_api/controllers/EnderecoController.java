@@ -9,17 +9,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/{id}/enderecos")
 public class EnderecoController {
 
     @Autowired
     EnderecoService enderecoService;
     ListaEnderecosDto listaEnderecosDto;
 
-    @PostMapping
+    @PostMapping("/{id}/enderecos")
     public ResponseEntity<?> saveEnderecos(@PathVariable(value = "id") Long id,
                                           @RequestBody @Valid ListaEnderecosDto listaEnderecosDtos){
         enderecoService.saveEnderecoService(id, listaEnderecosDtos.getEnderecos());
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/usuario/{idUsuario}/enderecos/{idEndereco}")
+    public ResponseEntity<?> deleteEndereco(@PathVariable(value = "idUsuario") Long idUsuario,
+                                            @PathVariable(value = "idEndereco") Long idEndereco){
+        enderecoService.deleteEnderecoService(idUsuario, idEndereco);
+        return ResponseEntity.status(HttpStatus.OK).build();
+
     }
 }

@@ -70,6 +70,7 @@ public class UsuarioService {
                 .map(usuario -> {
                     List<EnderecoResponseDto> enderecoResponseDto = usuario.getEnderecos().stream()
                             .map(enderecoModel -> new EnderecoResponseDto(
+                                    enderecoModel.getId(),
                                     enderecoModel.getLogradouro(),
                                     enderecoModel.getNumero(),
                                     enderecoModel.getComplemento(),
@@ -95,6 +96,7 @@ public class UsuarioService {
 
         List<EnderecoResponseDto> enderecos = usuarioModel.getEnderecos().stream()
                 .map(endereco -> new EnderecoResponseDto(
+                        endereco.getId(),
                         endereco.getLogradouro(),
                         endereco.getNumero(),
                         endereco.getComplemento(),
