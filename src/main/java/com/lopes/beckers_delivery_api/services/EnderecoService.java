@@ -4,13 +4,9 @@ import com.lopes.beckers_delivery_api.dtos.EnderecoRecordDto;
 import com.lopes.beckers_delivery_api.models.EnderecoModel;
 import com.lopes.beckers_delivery_api.models.UsuarioModel;
 import com.lopes.beckers_delivery_api.repositories.EnderecoRepository;
-import com.lopes.beckers_delivery_api.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,21 +15,17 @@ import java.util.stream.Collectors;
 public class EnderecoService {
 
     private final EnderecoRepository enderecoRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
     @Autowired
-    public EnderecoService(EnderecoRepository enderecoRepository, UsuarioRepository usuarioRepository) {
+    public EnderecoService(EnderecoRepository enderecoRepository, UsuarioService usuarioService) {
         this.enderecoRepository = enderecoRepository;
-        this.usuarioRepository = usuarioRepository;
+        this.usuarioService = usuarioService;
     }
 
     @Transactional
-    public List<EnderecoModel> saveEnderecoService(@PathVariable(value = "id") Long id,
-                                                   List<EnderecoRecordDto> enderecoRecordDto){
-        System.out.println("CHEGUEI NO SERVICE! ID = " + id);
-        UsuarioModel usuarioModel = usuarioRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado!"));
+    public List<EnderecoModel> saveEnderecoService(Long id, List<EnderecoRecordDto> enderecoRecordDto){
+        UsuarioModel usuarioModel = usuarioService.findById(id);
 
         List<EnderecoModel> enderecos = enderecoRecordDto
                 .stream()

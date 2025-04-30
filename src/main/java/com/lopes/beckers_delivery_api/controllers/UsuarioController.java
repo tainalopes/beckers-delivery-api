@@ -62,7 +62,7 @@ public class UsuarioController {
     @GetMapping("{id}")
     public ResponseEntity<Object> getUsuarioById(@PathVariable(value = "id") Long id) {
             Object usuarioResponseDto = usuarioService.getUsuarioByIdService(id);
-            return ResponseEntity.status(HttpStatus.CREATED)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(usuarioResponseDto);
     }
 }

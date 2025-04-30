@@ -4,6 +4,7 @@ import com.lopes.beckers_delivery_api.dtos.DadosUsuarioRecordDto;
 import com.lopes.beckers_delivery_api.dtos.DadosUsuarioResponseDto;
 import com.lopes.beckers_delivery_api.dtos.EnderecoResponseDto;
 import com.lopes.beckers_delivery_api.dtos.UsuarioResponseDto;
+import com.lopes.beckers_delivery_api.exceptions.NotFoundException;
 import com.lopes.beckers_delivery_api.models.EnderecoModel;
 import com.lopes.beckers_delivery_api.models.UsuarioModel;
 import com.lopes.beckers_delivery_api.repositories.UsuarioRepository;
@@ -90,9 +91,7 @@ public class UsuarioService {
     }
 
     public Object getUsuarioByIdService(@PathVariable(value = "id") Long id) {
-        UsuarioModel usuarioModel = usuarioRepository
-                .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado!"));
+        UsuarioModel usuarioModel = findById(id);
 
         List<EnderecoResponseDto> enderecos = usuarioModel.getEnderecos().stream()
                 .map(endereco -> new EnderecoResponseDto(
@@ -115,5 +114,11 @@ public class UsuarioService {
         );
 
         return new UsuarioResponseDto(dadosUsuario);
+    }
+
+    public UsuarioModel findById(Long id){
+        return usuarioRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));
     }
 }
