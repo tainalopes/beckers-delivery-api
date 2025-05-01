@@ -2,8 +2,8 @@ package com.lopes.beckers_delivery_api.controllers;
 
 import com.lopes.beckers_delivery_api.dtos.DadosUsuarioRecordDto;
 import com.lopes.beckers_delivery_api.dtos.DadosUsuarioResponseDto;
-import com.lopes.beckers_delivery_api.dtos.EnderecoResponseDto;
 import com.lopes.beckers_delivery_api.dtos.UsuarioResponseDto;
+import com.lopes.beckers_delivery_api.mappers.DadosUsuarioMapper;
 import com.lopes.beckers_delivery_api.models.UsuarioModel;
 import com.lopes.beckers_delivery_api.services.UsuarioService;
 import jakarta.validation.Valid;
@@ -13,43 +13,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
 
     @Autowired
-    UsuarioService usuarioService;
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private DadosUsuarioMapper dadosUsuarioMapper;
 
     @PostMapping
     public ResponseEntity<?> saveUsuario(@RequestBody @Valid DadosUsuarioRecordDto dadosUsuarioRecordDto) {
 
         UsuarioModel usuarioModel = usuarioService.saveUsuarioService(dadosUsuarioRecordDto);
-        List<EnderecoResponseDto> enderecosDto = usuarioModel.getEnderecos().stream()
-                .map(endereco -> new EnderecoResponseDto(
-                        endereco.getId(),
-                        endereco.getLogradouro(),
-                        endereco.getNumero(),
-                        endereco.getComplemento(),
-                        endereco.getBairro(),
-                        endereco.getCep(),
-                        endereco.getCidade(),
-                        endereco.getEstado()
-                )).collect(Collectors.toList());
 
-        DadosUsuarioResponseDto dadosUsuarioResponseDto = new DadosUsuarioResponseDto(
-                usuarioModel.getId(),
-                usuarioModel.getNome(),
-                usuarioModel.getEmail(),
-                usuarioModel.getCpf(),
-                enderecosDto
-        );
+        DadosUsuarioResponseDto dadosUsuarioResponseDto = dadosUsuarioMapper.toDto(usuarioModel);
 
         UsuarioResponseDto usuarioResponseDto = new UsuarioResponseDto(dadosUsuarioResponseDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(usuarioResponseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioResponseDto);
     }
 
     @GetMapping
@@ -62,8 +46,8 @@ public class UsuarioController {
 
     @GetMapping("{id}")
     public ResponseEntity<Object> getUsuarioById(@PathVariable(value = "id") Long id) {
-            Object usuarioResponseDto = usuarioService.getUsuarioByIdService(id);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(usuarioResponseDto);
+        Object usuarioResponseDto = usuarioService.getUsuarioByIdService(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(usuarioResponseDto);
     }
 }

@@ -2,9 +2,9 @@ package com.lopes.beckers_delivery_api.services;
 
 import com.lopes.beckers_delivery_api.dtos.DadosUsuarioRecordDto;
 import com.lopes.beckers_delivery_api.dtos.DadosUsuarioResponseDto;
-import com.lopes.beckers_delivery_api.dtos.EnderecoResponseDto;
 import com.lopes.beckers_delivery_api.dtos.UsuarioResponseDto;
 import com.lopes.beckers_delivery_api.exceptions.NotFoundException;
+import com.lopes.beckers_delivery_api.mappers.DadosUsuarioMapper;
 import com.lopes.beckers_delivery_api.models.EnderecoModel;
 import com.lopes.beckers_delivery_api.models.UsuarioModel;
 import com.lopes.beckers_delivery_api.repositories.UsuarioRepository;
@@ -22,7 +22,10 @@ import java.util.stream.Collectors;
 public class UsuarioService {
 
     @Autowired // injetor do repository na service
-    UsuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private DadosUsuarioMapper dadosUsuarioMapper;
 
     @Transactional // caso algo dê errado, ele faz o rollback
     public UsuarioModel saveUsuarioService(DadosUsuarioRecordDto dadosUsuarioRecordDto) {
@@ -68,24 +71,9 @@ public class UsuarioService {
 
         return usuarios.stream()
                 .map(usuario -> {
-                    List<EnderecoResponseDto> enderecoResponseDto = usuario.getEnderecos().stream()
-                            .map(enderecoModel -> new EnderecoResponseDto(
-                                    enderecoModel.getId(),
-                                    enderecoModel.getLogradouro(),
-                                    enderecoModel.getNumero(),
-                                    enderecoModel.getComplemento(),
-                                    enderecoModel.getBairro(),
-                                    enderecoModel.getCep(),
-                                    enderecoModel.getCidade(),
-                                    enderecoModel.getEstado()
-                            )).collect(Collectors.toList());
 
-                    DadosUsuarioResponseDto dadosUsuarioResponseDto = new DadosUsuarioResponseDto(
-                            usuario.getId(),
-                            usuario.getNome(),
-                            usuario.getEmail(),
-                            usuario.getCpf(),
-                            enderecoResponseDto);
+                    DadosUsuarioResponseDto dadosUsuarioResponseDto = dadosUsuarioMapper.toDto(usuario);
+
                     return new UsuarioResponseDto(dadosUsuarioResponseDto);
                 })
                 .collect(Collectors.toList());
@@ -94,31 +82,12 @@ public class UsuarioService {
     public Object getUsuarioByIdService(@PathVariable(value = "id") Long id) {
         UsuarioModel usuarioModel = findById(id);
 
-        List<EnderecoResponseDto> enderecos = usuarioModel.getEnderecos().stream()
-                .map(endereco -> new EnderecoResponseDto(
-                        endereco.getId(),
-                        endereco.getLogradouro(),
-                        endereco.getNumero(),
-                        endereco.getComplemento(),
-                        endereco.getBairro(),
-                        endereco.getCep(),
-                        endereco.getCidade(),
-                        endereco.getEstado()
-                ))
-                .collect(Collectors.toList());
+        DadosUsuarioResponseDto dadosUsuarioResponseDto = dadosUsuarioMapper.toDto(usuarioModel);
 
-        DadosUsuarioResponseDto dadosUsuario = new DadosUsuarioResponseDto(
-                usuarioModel.getId(),
-                usuarioModel.getNome(),
-                usuarioModel.getEmail(),
-                usuarioModel.getCpf(),
-                enderecos
-        );
-
-        return new UsuarioResponseDto(dadosUsuario);
+        return new UsuarioResponseDto(dadosUsuarioResponseDto);
     }
 
-    public UsuarioModel findById(Long id){
+    public UsuarioModel findById(Long id) {
         return usuarioRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));

@@ -13,7 +13,6 @@ public class EnderecoController {
 
     @Autowired
     EnderecoService enderecoService;
-    ListaEnderecosDto listaEnderecosDto;
 
     @PostMapping("/{id}/enderecos")
     public ResponseEntity<?> saveEnderecos(@PathVariable(value = "id") Long id,
