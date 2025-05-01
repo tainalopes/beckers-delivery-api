@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lopes.beckers_delivery_api.enums.EstadosEnum;
 
 public record EnderecoResponseDto(
+        @JsonProperty("ID") Long id,
         @JsonProperty("Logradouro") String logradouro,
         @JsonProperty("Número") String numero,
         @JsonProperty("Complemento") String complemento,
