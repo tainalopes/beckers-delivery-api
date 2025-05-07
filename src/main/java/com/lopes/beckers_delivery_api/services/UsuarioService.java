@@ -5,7 +5,6 @@ import com.lopes.beckers_delivery_api.dtos.DadosUsuarioResponseDto;
 import com.lopes.beckers_delivery_api.dtos.UsuarioResponseDto;
 import com.lopes.beckers_delivery_api.exceptions.NotFoundException;
 import com.lopes.beckers_delivery_api.mappers.DadosUsuarioMapper;
-import com.lopes.beckers_delivery_api.models.EnderecoModel;
 import com.lopes.beckers_delivery_api.models.UsuarioModel;
 import com.lopes.beckers_delivery_api.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -45,21 +44,6 @@ public class UsuarioService {
         usuarioModel.setEmail(dadosUsuarioRecordDto.email());
         usuarioModel.setSenha(dadosUsuarioRecordDto.senha());
         usuarioModel.setCpf(dadosUsuarioRecordDto.cpf());
-
-        List<EnderecoModel> enderecos = dadosUsuarioRecordDto.enderecos().stream().map(endereco -> {
-            EnderecoModel enderecoModel = new EnderecoModel();
-            enderecoModel.setLogradouro(endereco.logradouro());
-            enderecoModel.setNumero(endereco.numero());
-            enderecoModel.setComplemento(endereco.complemento());
-            enderecoModel.setBairro(endereco.bairro());
-            enderecoModel.setCep(endereco.cep());
-            enderecoModel.setCidade(endereco.cidade());
-            enderecoModel.setEstado(endereco.estado());
-            enderecoModel.setUsuario(usuarioModel); // seta o usuário para manter o relacionamento
-            return enderecoModel;
-        }).collect(Collectors.toList());
-
-        usuarioModel.setEnderecos(enderecos);
 
         return usuarioRepository.save(usuarioModel);
     }
