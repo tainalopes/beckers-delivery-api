@@ -36,6 +36,18 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioResponseDto);
     }
 
+    @PutMapping("{id}/editar")
+    public ResponseEntity<?> updateUsuario(@PathVariable(value = "id") Long id,
+                                           @RequestBody @Valid DadosUsuarioRecordDto dadosUsuarioRecordDto){
+        UsuarioModel usuarioModel = usuarioService.updateUsuarioService(id, dadosUsuarioRecordDto);
+
+        DadosUsuarioResponseDto dadosUsuarioResponseDto = dadosUsuarioMapper.toDto(usuarioModel);
+
+        UsuarioResponseDto usuarioResponseDto = new UsuarioResponseDto(dadosUsuarioResponseDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioResponseDto);
+    }
+
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDto>> getAllUsuarios(@RequestParam("pagina") int page,
                                                                    @RequestParam("itens") int itens) {
