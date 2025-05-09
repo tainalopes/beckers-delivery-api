@@ -8,8 +8,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface DadosUsuarioMapper {
 
-    DadosUsuarioMapper INSTANCE = Mappers.getMapper(DadosUsuarioMapper.class);
-
     DadosUsuarioResponseDto toDto(UsuarioModel usuarioModel);
 
 }

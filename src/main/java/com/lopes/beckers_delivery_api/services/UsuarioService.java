@@ -5,7 +5,6 @@ import com.lopes.beckers_delivery_api.dtos.DadosUsuarioResponseDto;
 import com.lopes.beckers_delivery_api.dtos.UsuarioResponseDto;
 import com.lopes.beckers_delivery_api.exceptions.NotFoundException;
 import com.lopes.beckers_delivery_api.mappers.DadosUsuarioMapper;
-import com.lopes.beckers_delivery_api.models.EnderecoModel;
 import com.lopes.beckers_delivery_api.models.UsuarioModel;
 import com.lopes.beckers_delivery_api.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,15 +30,8 @@ public class UsuarioService {
     @Transactional // caso algo dê errado, ele faz o rollback
     public UsuarioModel saveUsuarioService(DadosUsuarioRecordDto dadosUsuarioRecordDto) {
 
-        usuarioRepository.findByEmail(dadosUsuarioRecordDto.email())
-                .ifPresent(u -> {
-                    throw new IllegalArgumentException("Já existe um usuário com o email " + dadosUsuarioRecordDto.email() + ".");
-                });
-
-        usuarioRepository.findByCpf(dadosUsuarioRecordDto.cpf())
-                .ifPresent(u -> {
-                    throw new IllegalArgumentException("Já existe um usuário com o CPF " + dadosUsuarioRecordDto.cpf() + ".");
-                });
+        findByEmailService(dadosUsuarioRecordDto.email());
+        findByCpfService(dadosUsuarioRecordDto.cpf());
 
         UsuarioModel usuarioModel = new UsuarioModel();
         usuarioModel.setNome(dadosUsuarioRecordDto.nome());
@@ -46,20 +39,27 @@ public class UsuarioService {
         usuarioModel.setSenha(dadosUsuarioRecordDto.senha());
         usuarioModel.setCpf(dadosUsuarioRecordDto.cpf());
 
-        List<EnderecoModel> enderecos = dadosUsuarioRecordDto.enderecos().stream().map(endereco -> {
-            EnderecoModel enderecoModel = new EnderecoModel();
-            enderecoModel.setLogradouro(endereco.logradouro());
-            enderecoModel.setNumero(endereco.numero());
-            enderecoModel.setComplemento(endereco.complemento());
-            enderecoModel.setBairro(endereco.bairro());
-            enderecoModel.setCep(endereco.cep());
-            enderecoModel.setCidade(endereco.cidade());
-            enderecoModel.setEstado(endereco.estado());
-            enderecoModel.setUsuario(usuarioModel); // seta o usuário para manter o relacionamento
-            return enderecoModel;
-        }).collect(Collectors.toList());
+        return usuarioRepository.save(usuarioModel);
+    }
 
-        usuarioModel.setEnderecos(enderecos);
+    @Transactional
+    public UsuarioModel updateUsuarioService(@PathVariable(value = "id") Long id,
+                                             DadosUsuarioRecordDto dadosUsuarioRecordDto){
+        UsuarioModel usuarioModel = findById(id);
+
+        if (!Objects.equals(usuarioModel.getEmail(), dadosUsuarioRecordDto.email())
+                && usuarioRepository.findByEmail(dadosUsuarioRecordDto.email()).isPresent()) {
+            throw new IllegalArgumentException("Já existe um usuário com o email " + dadosUsuarioRecordDto.email() + ".");
+        }
+
+        if(!Objects.equals(usuarioModel.getCpf(), dadosUsuarioRecordDto.cpf())){
+            throw new IllegalArgumentException("Não é possível alterar o CPF de um usuário já cadastrado.");
+        }
+
+        usuarioModel.setNome(dadosUsuarioRecordDto.nome());
+        usuarioModel.setEmail(dadosUsuarioRecordDto.email());
+        usuarioModel.setSenha(dadosUsuarioRecordDto.senha());
+        usuarioModel.setCpf(dadosUsuarioRecordDto.cpf());
 
         return usuarioRepository.save(usuarioModel);
     }
@@ -91,5 +91,21 @@ public class UsuarioService {
         return usuarioRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));
+    }
+
+    public void findByCpfService(String cpf){
+        usuarioRepository
+                .findByCpf(cpf)
+                .ifPresent(u -> {
+                    throw new IllegalArgumentException("Já existe um usuário com o CPF " + cpf + ".");
+                });
+    }
+
+    public void findByEmailService(String email){
+        usuarioRepository
+                .findByEmail(email)
+                .ifPresent(u -> {
+                    throw new IllegalArgumentException("Já existe um usuário com o email " + email + ".");
+                });
     }
 }
